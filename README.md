@@ -5,7 +5,7 @@ out the "obvious" gate to force you to actually compose one from scratch.
 
 Part of the [LabBench](https://labbench-hub.vercel.app/) suite of interactive engineering tools.
 
-**Live demo:** https://circuit-puzzle.vercel.app/
+**Live demo:** https://circuit-puzzle-sand.vercel.app/
 
 ## Features
 - 6 levels of increasing difficulty: Basic AND/OR warm-ups, XOR built from AND/OR/NOT only, a Half
