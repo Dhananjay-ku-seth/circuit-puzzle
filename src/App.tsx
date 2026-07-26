@@ -141,7 +141,7 @@ export default function App() {
         <div className="mark">◈</div>
         <div>
           <h1>CIRCUIT PUZZLE</h1>
-          <p>Match the truth table with the fewest gates — logic design as a puzzle game</p>
+          <p>Match the truth table with the fewest gates — logic design as an interactive challenge</p>
         </div>
         <div className="badges">
           <AuthPanel />

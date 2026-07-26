@@ -1,5 +1,5 @@
 // Same gate-evaluation engine as Logic Circuit Simulator (iterative relaxation,
-// handles feedback), reused as-is since the math doesn't change for a puzzle game.
+// handles feedback), reused as-is since the math doesn't change for a puzzle challenge.
 
 export type Kind = "IN" | "OUT" | "AND" | "OR" | "NOT" | "NAND" | "NOR" | "XOR" | "XNOR";
 export type Bit = 0 | 1;

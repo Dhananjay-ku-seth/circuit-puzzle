@@ -1,6 +1,6 @@
 # Circuit Puzzle
 
-A logic-design puzzle game: match a target truth table using as few gates as possible. Some levels lock
+A logic-design puzzle challenge: match a target truth table using as few gates as possible. Some levels lock
 out the "obvious" gate to force you to actually compose one from scratch.
 
 Part of the [LabBench](https://labbench-hub.vercel.app/) suite of interactive engineering tools.
