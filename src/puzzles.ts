@@ -43,7 +43,7 @@ export const PUZZLES: Puzzle[] = [
     inputs: ["A", "B"],
     outputs: ["Y"],
     allowedGates: BASIC_GATES,
-    par: 5,
+    par: 4,
     compute: ([a, b]) => [(a ^ b) as Bit],
   },
   {
@@ -63,7 +63,7 @@ export const PUZZLES: Puzzle[] = [
     inputs: ["A", "B", "C"],
     outputs: ["Y"],
     allowedGates: ALL_GATES,
-    par: 5,
+    par: 4,
     compute: ([a, b, c]) => [((a && b) || (b && c) || (a && c)) ? 1 : 0],
   },
   {
@@ -73,7 +73,7 @@ export const PUZZLES: Puzzle[] = [
     inputs: ["A", "B", "S"],
     outputs: ["Y"],
     allowedGates: BASIC_GATES,
-    par: 5,
+    par: 4,
     compute: ([a, b, s]) => [(s ? b : a) as Bit],
   },
 ];
