@@ -54,6 +54,8 @@ export default function SaveCircuit({
     setSaving(false);
     setNaming(false);
     setMsg(error ? `Save failed: ${error.message}` : "Saved!");
+    // Invalidate the cached list so a freshly saved attempt actually shows up next time it's opened.
+    if (!error) setRows(null);
     setTimeout(() => setMsg(null), 3000);
   }
 

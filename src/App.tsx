@@ -49,6 +49,43 @@ export default function App() {
     }
   }, [result.solved, result.gateCount, puzzle]);
 
+  // Confetti burst the moment a level flips from unsolved to solved (not on every re-render
+  // while it stays solved, and not when just switching to a level that was already solved).
+  const wasSolved = useRef(false);
+  const [confetti, setConfetti] = useState<{ id: number; dx: number; dy: number; rot: number; delay: number; color: string }[]>([]);
+  useEffect(() => {
+    const justSolved = result.solved && !wasSolved.current;
+    wasSolved.current = result.solved;
+    if (!justSolved) return;
+    const colors = ["#fb7185", "#f59e0b", "#4ade80", "#38bdf8", "#c084fc"];
+    const pieces = Array.from({ length: 18 }, (_, i) => ({
+      id: Date.now() + i,
+      dx: (Math.random() - 0.5) * 220,
+      dy: -40 - Math.random() * 160,
+      rot: (Math.random() - 0.5) * 540,
+      delay: Math.random() * 120,
+      color: colors[i % colors.length],
+    }));
+    setConfetti(pieces);
+    const t = setTimeout(() => setConfetti([]), 1100);
+    return () => clearTimeout(t);
+  }, [result.solved]);
+
+  // Flash a truth-table row green the instant it goes from wrong to right, so wiring
+  // progress is visible row-by-row instead of only as a final pass/fail flip.
+  const prevRowOk = useRef<boolean[]>([]);
+  const [justFixed, setJustFixed] = useState<Set<number>>(new Set());
+  useEffect(() => {
+    const prev = prevRowOk.current;
+    const fixed = new Set<number>();
+    result.rows.forEach((r, i) => { if (r.ok && prev[i] === false) fixed.add(i); });
+    prevRowOk.current = result.rows.map((r) => r.ok);
+    if (fixed.size === 0) return;
+    setJustFixed(fixed);
+    const t = setTimeout(() => setJustFixed(new Set()), 600);
+    return () => clearTimeout(t);
+  }, [result.rows]);
+
   function toSvg(clientX: number, clientY: number) {
     const r = svgRef.current!.getBoundingClientRect();
     return { x: (clientX - r.left) * (SVW / r.width), y: (clientY - r.top) * (SVH / r.height) };
@@ -210,13 +247,14 @@ export default function App() {
             return <path d={wirePath(a.x, a.y, pending.x, pending.y)} fill="none" stroke="#f59e0b" strokeWidth={2.5} strokeDasharray="5 4" />;
           })()}
 
-          {comps.map((c) => {
+          {comps.map((c, idx) => {
             const { w, h } = dims(c.kind);
             const out = values[c.id] === 1;
             const isIn = c.kind === "IN", isOut = c.kind === "OUT";
             const disallowed = !isIn && !isOut && !puzzle.allowedGates.includes(c.kind);
             return (
               <g key={c.id} transform={`translate(${c.x},${c.y})`}
+                style={{ ["--i" as any]: idx }}
                 className={"node" + (selected === c.id ? " sel" : "")}
                 onPointerDown={(e) => { e.stopPropagation(); startDrag(c.id, e); }}>
                 <rect width={w} height={h} rx={isIn || isOut ? 8 : 10}
@@ -249,7 +287,7 @@ export default function App() {
             </tr></thead>
             <tbody>
               {result.rows.map((r, i) => (
-                <tr key={i} className={r.ok ? "row-ok" : "row-bad"}>
+                <tr key={i} className={(r.ok ? "row-ok" : "row-bad") + (justFixed.has(i) ? " just-fixed" : "")}>
                   {r.inputs.map((b, j) => <td key={j} className={b ? "one" : "zero"}>{b}</td>)}
                   {r.expected.map((b, j) => <td key={j} className={"o " + (b ? "one" : "zero")}>{r.actual[j]}{r.ok ? "" : ` (want ${b})`}</td>)}
                 </tr>
@@ -260,6 +298,15 @@ export default function App() {
           {result.usedDisallowedGate && <p className="warn-line">✕ Using a locked gate for this level.</p>}
           {result.solved && (
             <div className="solved-banner">
+              {confetti.map((p) => (
+                <span key={p.id} className="confetti-piece" style={{
+                  background: p.color,
+                  animationDelay: `${p.delay}ms`,
+                  ["--dx" as any]: `${p.dx}px`,
+                  ["--dy" as any]: `${p.dy}px`,
+                  ["--rot" as any]: `${p.rot}deg`,
+                }} />
+              ))}
               ✓ SOLVED — {"★".repeat(starsFor(puzzle, result.gateCount))}
               {PUZZLES.findIndex((p) => p.id === puzzleId) < PUZZLES.length - 1 && (
                 <button onClick={() => loadPuzzle(PUZZLES[PUZZLES.findIndex((p) => p.id === puzzleId) + 1].id)}>Next Level →</button>
